@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetMap - สมัครสมาชิก VIP</title>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .payment-container {
+      max-width: 500px;
+      margin: 2rem auto;
+      text-align: center;
+    }
+    .qr-box {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 16px;
+      display: inline-block;
+      margin: 1.5rem 0;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .qr-img {
+      width: 220px;
+      height: 220px;
+      display: block;
+      margin: 0 auto;
+    }
+    .status-banner {
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .status-pending {
+      background: rgba(255, 234, 0, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(255, 234, 0, 0.3);
+    }
+    .status-approved {
+      background: rgba(0, 230, 118, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header>
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-heart-pulse"></i> SweetMap
+    </a>
+    <nav>
+      <a href="index.html"><i class="fa-solid fa-list-ul"></i> รายชื่อทั้งหมด</a>
+      <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> ค้นหาบนแผนที่</a>
+      <a href="register.html" class="btn-cta"><i class="fa-solid fa-user-plus"></i> สมัครสมาชิก</a>
+      <a href="admin.html"><i class="fa-solid fa-user-gear"></i> แอดมิน</a>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <div class="payment-container form-card">
+      <div style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.8rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">สมัครสมาชิก VIP - ปลดล็อกข้อมูลทั้งหมด</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">สแกนโอนเงินเพื่อสิทธิ์เข้าชมแผนที่ พิกัดจริง และข้อมูลการติดต่อ</p>
+      </div>
+
+      <!-- 1. VIP Status Alerts -->
+      <div id="payment-status-container" style="display: none;">
+        <!-- Status banners will be dynamically injected here -->
+      </div>
+
+      <!-- 2. QR Code Scanner Section -->
+      <div id="payment-qr-sec">
+        <div class="qr-box">
+          <img id="qr-image" class="qr-img" src="" alt="PromptPay QR Code">
+        </div>
+        
+        <div style="margin-bottom: 2rem;">
+          <p style="font-size: 1.2rem; font-weight: 700; color: var(--primary-glow);">
+            ยอดชำระโอน: <span id="payment-amount">0</span> บาท
+          </p>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.3rem;">
+            พร้อมเพย์ ID: <span id="promptpay-id">-</span>
+          </p>
+        </div>
+
+        <!-- 3. Slip Upload Form -->
+        <form id="payment-slip-form" enctype="multipart/form-data">
+          <div class="form-group" style="text-align: left;">
+            <label><i class="fa-solid fa-receipt"></i> แนบหลักฐานสลิปการโอนเงิน</label>
+            <div class="file-upload-wrapper">
+              <i class="fa-solid fa-file-image" style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 0.5rem;"></i>
+              <p style="color: var(--text-secondary); font-size: 0.9rem;">คลิกเพื่ออัปโหลดรูปภาพสลิปโอนเงิน</p>
+              <input type="file" id="slip-file" name="slip" accept="image/*" required>
+              <img id="slip-preview" class="file-upload-preview" alt="Payment Slip Preview">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-cta" style="width: 100%; padding: 0.8rem; font-size: 1rem; margin-top: 1rem;">
+            <i class="fa-solid fa-circle-check"></i> ยืนยันแจ้งโอนเงิน
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initPaymentPage();
+
+      // Slip image preview
+      const slipFileInput = document.getElementById('slip-file');
+      const slipPreviewImg = document.getElementById('slip-preview');
+
+      slipFileInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            slipPreviewImg.src = e.target.result;
+            slipPreviewImg.style.display = 'block';
+          }
+          reader.readAsDataURL(file);
+        } else {
+          slipPreviewImg.src = '';
+          slipPreviewImg.style.display = 'none';
+        }
+      });
+
+      // Form submission
+      document.getElementById('payment-slip-form').addEventListener('submit', handleSlipSubmit);
+    });
+  </script>
+</body>
+</html>

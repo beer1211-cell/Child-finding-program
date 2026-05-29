@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetMap - ค้นหาคู่และเพื่อนคุยใกล้ตัวคุณ</title>
+  <!-- FontAwesome for beautiful icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header>
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-heart-pulse"></i> SweetMap
+    </a>
+    <nav id="navbar-links">
+      <a href="index.html" class="active"><i class="fa-solid fa-list-ul"></i> รายชื่อทั้งหมด</a>
+      <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> ค้นหาบนแผนที่</a>
+      <a href="register.html" class="btn-cta"><i class="fa-solid fa-user-plus"></i> สมัครสมาชิก</a>
+      <a href="admin.html"><i class="fa-solid fa-user-gear"></i> แอดมิน</a>
+    </nav>
+  </header>
+
+  <!-- VIP Alert Banner -->
+  <div id="vip-alert-banner" class="container" style="display: none; margin-top: 1.5rem; margin-bottom: 0;">
+    <div style="background: rgba(255, 42, 116, 0.15); border: 1px solid rgba(255, 42, 116, 0.3); padding: 1rem 1.5rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h4 style="color: #ff2a74; font-size: 1.1rem; margin-bottom: 0.2rem;"><i class="fa-solid fa-lock"></i> ปลดล็อกข้อมูลและตำแหน่งพิกัดทั้งหมด</h4>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">ข้อมูลราคา ช่องทางติดต่อ และแผนที่พิกัดถูกจำกัดการเข้าชมเฉพาะ VIP เท่านั้น</p>
+      </div>
+      <a href="payment.html" class="btn-cta"><i class="fa-solid fa-gem"></i> สมัครสมาชิก VIP ตอนนี้</a>
+    </div>
+  </div>
+
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>ค้นหาคู่และเพื่อนคุยใกล้ตัวคุณ</h1>
+    <p>ระบุโลเคชั่น ดูราคา และติดต่อได้ทันที ปลอดภัยและเป็นส่วนตัว</p>
+  </section>
+
+  <!-- Main Container -->
+  <main class="container">
+    
+    <!-- Controls / Filters -->
+    <section class="controls-bar">
+      <div class="search-input-group">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="search-name" placeholder="ค้นหาชื่อเล่นหรือคีย์เวิร์ด...">
+      </div>
+      
+      <div class="filter-group">
+        <div class="filter-item">
+          <label for="filter-price">ราคาไม่เกิน</label>
+          <input type="number" id="filter-price" placeholder="ระบุราคา..." min="0">
+        </div>
+        
+        <div class="filter-item">
+          <label for="filter-status">สถานะ</label>
+          <select id="filter-status">
+            <option value="all">ทั้งหมด</option>
+            <option value="available">ว่าง</option>
+            <option value="busy">ไม่ว่าง</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- User Grid -->
+    <section class="cards-grid" id="users-grid">
+      <!-- Cards will be dynamically injected here via JS -->
+      <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 3rem;">
+        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--primary-glow);"></i>
+        <p>กำลังโหลดรายชื่อสมาชิก...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Booking / Contact Details Modal -->
+  <div class="modal-backdrop" id="contact-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">ข้อมูลติดต่อ</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img id="modal-avatar" class="modal-avatar" src="" alt="avatar">
+        <h2 id="modal-user-name" style="margin-bottom: 0.5rem;"></h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+          กรุณาเพิ่มเพื่อนผ่านช่องทางติดต่อด้านล่าง และแจ้งว่ามาจาก <strong>SweetMap</strong>
+        </p>
+
+        <div class="contact-info-box">
+          <div class="contact-row">
+            <span class="contact-label"><i class="fa-brands fa-line" style="color: #06c755;"></i> Line ID</span>
+            <span class="contact-value" id="modal-line"></span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-label"><i class="fa-solid fa-phone" style="color: #2196f3;"></i> เบอร์โทรศัพท์</span>
+            <span class="contact-value" id="modal-phone"></span>
+          </div>
+        </div>
+
+        <button class="btn-cta" onclick="closeModal()" style="margin-top: 1.5rem; width: 100%;">
+          ตกลง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProfiles();
+      
+      // Setup live filters
+      document.getElementById('search-name').addEventListener('input', applyFilters);
+      document.getElementById('filter-price').addEventListener('input', applyFilters);
+      document.getElementById('filter-status').addEventListener('change', applyFilters);
+    });
+  </script>
+</body>
+</html>

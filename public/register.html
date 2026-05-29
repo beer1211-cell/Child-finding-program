@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetMap - สมัครสมาชิกใหม่</title>
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header>
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-heart-pulse"></i> SweetMap
+    </a>
+    <nav>
+      <a href="index.html"><i class="fa-solid fa-list-ul"></i> รายชื่อทั้งหมด</a>
+      <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> ค้นหาบนแผนที่</a>
+      <a href="register.html" class="btn-cta active"><i class="fa-solid fa-user-plus"></i> สมัครสมาชิก</a>
+      <a href="admin.html"><i class="fa-solid fa-user-gear"></i> แอดมิน</a>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    
+    <div class="form-card">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h2 style="font-size: 2rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">สมัครสมาชิกเข้าร่วมระบบ</h2>
+        <p style="color: var(--text-secondary);">กรอกข้อมูลโปรไฟล์ของคุณให้ครบถ้วนเพื่อสร้างการ์ดแนะนำตัว</p>
+      </div>
+
+      <form id="register-form" enctype="multipart/form-data">
+        <!-- Name -->
+        <div class="form-group">
+          <label for="reg-name"><i class="fa-solid fa-user"></i> ชื่อเล่น / นามแฝง <span style="color: var(--danger);">*</span></label>
+          <input type="text" id="reg-name" name="name" required placeholder="ระบุชื่อที่ต้องการให้แสดงในระบบ">
+        </div>
+
+        <div class="form-row">
+          <!-- Price -->
+          <div class="form-group">
+            <label for="reg-price"><i class="fa-solid fa-tags"></i> เรทราคาต่อชั่วโมง/ครั้ง (บาท) <span style="color: var(--danger);">*</span></label>
+            <input type="number" id="reg-price" name="price" required min="0" placeholder="เช่น 1500">
+          </div>
+          <!-- Status -->
+          <div class="form-group">
+            <label for="reg-status"><i class="fa-solid fa-circle-question"></i> สถานะเริ่มต้น</label>
+            <select id="reg-status" name="status">
+              <option value="available">ว่าง (พร้อมให้บริการ)</option>
+              <option value="busy">ไม่ว่าง</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Bio / Description -->
+        <div class="form-group">
+          <label for="reg-bio"><i class="fa-solid fa-feather-alt"></i> แนะนำตัวเอง / รายละเอียดงาน</label>
+          <textarea id="reg-bio" name="bio" rows="3" placeholder="ระบุความชอบ สไตล์งาน หรือสิ่งที่ลูกค้าควรรู้เกี่ยวกับคุณ..."></textarea>
+        </div>
+
+        <!-- Contact Info (Line ID & Phone) -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-line"><i class="fa-brands fa-line" style="color: #06c755;"></i> Line ID <span style="color: var(--danger);">*</span></label>
+            <input type="text" id="reg-line" name="lineId" required placeholder="ระบุ Line ID">
+          </div>
+          <div class="form-group">
+            <label for="reg-phone"><i class="fa-solid fa-phone" style="color: #2196f3;"></i> เบอร์โทรศัพท์</label>
+            <input type="tel" id="reg-phone" name="phone" placeholder="ระบุเบอร์โทรศัพท์ (ไม่บังคับ)">
+          </div>
+        </div>
+
+        <!-- Photo Upload -->
+        <div class="form-group">
+          <label><i class="fa-solid fa-image"></i> รูปภาพโปรไฟล์ <span style="color: var(--danger);">*</span></label>
+          <div class="file-upload-wrapper">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 0.5rem;"></i>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">คลิกเพื่อเลือกไฟล์รูปภาพ หรือลากมาวางที่นี่</p>
+            <input type="file" id="reg-photo" name="photo" accept="image/*" required>
+            <img id="upload-preview" class="file-upload-preview" alt="Preview Image">
+          </div>
+        </div>
+
+        <!-- Map Location Picker -->
+        <div class="form-group">
+          <label><i class="fa-solid fa-location-dot"></i> ปักหมุดที่ตั้งให้บริการของคุณ <span style="color: var(--danger);">*</span></label>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+            *ตำแหน่งพิกัดของคุณจะไม่ถูกนำไปเผยแพร่อย่างแม่นยำ ระบบจะบิดพิกัดเล็กน้อยโดยอัตโนมัติบนแผนที่สาธารณะเพื่อความปลอดภัยสูงสุด
+          </p>
+          <div id="register-map"></div>
+          
+          <div class="form-row" style="margin-top: 1rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="reg-lat" style="font-size: 0.75rem;">ละติจูด (Lat)</label>
+              <input type="text" id="reg-lat" name="lat" readonly required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="reg-lng" style="font-size: 0.75rem;">ลองจิจูด (Lng)</label>
+              <input type="text" id="reg-lng" name="lng" readonly required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-cta" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem;">
+          <i class="fa-solid fa-paper-plane"></i> ส่งใบสมัครสมาชิก
+        </button>
+
+      </form>
+    </div>
+
+  </main>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initRegisterMap();
+      
+      // Photo upload preview logic
+      const fileInput = document.getElementById('reg-photo');
+      const previewImg = document.getElementById('upload-preview');
+      
+      fileInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewImg.style.display = 'block';
+          }
+          reader.readAsDataURL(file);
+        } else {
+          previewImg.src = '';
+          previewImg.style.display = 'none';
+        }
+      });
+
+      // Submit Form
+      document.getElementById('register-form').addEventListener('submit', handleRegisterSubmit);
+    });
+  </script>
+</body>
+</html>

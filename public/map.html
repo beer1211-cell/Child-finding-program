@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetMap - ค้นหาคนใกล้ตัวบนแผนที่</title>
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header>
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-heart-pulse"></i> SweetMap
+    </a>
+    <nav id="navbar-links">
+      <a href="index.html"><i class="fa-solid fa-list-ul"></i> รายชื่อทั้งหมด</a>
+      <a href="map.html" class="active"><i class="fa-solid fa-map-location-dot"></i> ค้นหาบนแผนที่</a>
+      <a href="register.html" class="btn-cta"><i class="fa-solid fa-user-plus"></i> สมัครสมาชิก</a>
+      <a href="admin.html"><i class="fa-solid fa-user-gear"></i> แอดมิน</a>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    
+    <!-- Hero / Title -->
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <h2 style="font-size: 2rem;">แผนที่ค้นหาสมาชิกใกล้ตัว</h2>
+      <p style="color: var(--text-secondary);">เปิด GPS หรือเลือกจุดอ้างอิงเพื่อค้นหาสมาชิกใกล้เคียงในระยะที่กำหนด</p>
+    </div>
+
+    <!-- Map Search Controls -->
+    <section class="controls-bar" id="map-controls-bar" style="margin-bottom: 1.5rem;">
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; width: 100%; align-items: center;">
+        <button class="btn-cta" id="btn-geolocation" style="background: var(--bg-glass); border: 1px solid var(--border-glass); box-shadow: none;">
+          <i class="fa-solid fa-location-crosshairs"></i> ใช้พิกัดปัจจุบันของฉัน
+        </button>
+        
+        <div class="filter-item">
+          <label for="map-radius">ระยะค้นหา (กิโลเมตร)</label>
+          <select id="map-radius">
+            <option value="5">5 กม.</option>
+            <option value="10" selected>10 กม.</option>
+            <option value="25">25 กม.</option>
+            <option value="50">50 กม.</option>
+            <option value="99999">แสดงทั้งหมด</option>
+          </select>
+        </div>
+
+        <div id="search-origin-text" style="color: var(--text-secondary); font-size: 0.9rem; flex-grow: 1;">
+          <i class="fa-solid fa-circle-info"></i> ปักหมุดพิกัดเริ่มต้นของคุณบนแผนที่เพื่อเริ่มวัดระยะห่าง
+        </div>
+      </div>
+    </section>
+
+    <!-- VIP Block Blocker -->
+    <div id="map-vip-blocker" style="display: none; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 4rem 2rem; text-align: center; margin-bottom: 2rem;">
+      <i class="fa-solid fa-map-location-dot" style="font-size: 4rem; color: var(--secondary-glow); margin-bottom: 1.5rem;"></i>
+      <h3 style="font-size: 1.8rem; margin-bottom: 0.8rem;">ระบบแผนที่เฉพาะสมาชิก VIP เท่านั้น</h3>
+      <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 2rem auto;">
+        คุณต้องลงทะเบียนและเป็นสมาชิก VIP จึงจะสามารถดูตำแหน่งของผู้ให้บริการ ปักหมุดค้นหารอบตัว และคำนวณวัดระยะทางในระบบแผนที่ได้
+      </p>
+      <a href="payment.html" class="btn-cta"><i class="fa-solid fa-gem"></i> สมัครสมาชิก VIP ตอนนี้</a>
+    </div>
+
+    <!-- Map Element -->
+    <div id="map-wrapper-div">
+      <div id="map"></div>
+    </div>
+
+
+  </main>
+
+  <!-- Contact Modal (Shared with index.html) -->
+  <div class="modal-backdrop" id="contact-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">ข้อมูลติดต่อ</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img id="modal-avatar" class="modal-avatar" src="" alt="avatar">
+        <h2 id="modal-user-name" style="margin-bottom: 0.5rem;"></h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+          กรุณาเพิ่มเพื่อนผ่านช่องทางติดต่อด้านล่าง และแจ้งว่ามาจาก <strong>SweetMap</strong>
+        </p>
+
+        <div class="contact-info-box">
+          <div class="contact-row">
+            <span class="contact-label"><i class="fa-brands fa-line" style="color: #06c755;"></i> Line ID</span>
+            <span class="contact-value" id="modal-line"></span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-label"><i class="fa-solid fa-phone" style="color: #2196f3;"></i> เบอร์โทรศัพท์</span>
+            <span class="contact-value" id="modal-phone"></span>
+          </div>
+        </div>
+
+        <button class="btn-cta" onclick="closeModal()" style="margin-top: 1.5rem; width: 100%;">
+          ตกลง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initSearchMap();
+    });
+  </script>
+</body>
+</html>

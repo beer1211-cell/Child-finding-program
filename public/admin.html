@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetMap - ผู้ดูแลระบบ (Secret Ranking)</title>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header>
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-heart-pulse"></i> SweetMap
+    </a>
+    <nav id="navbar-links">
+      <a href="index.html"><i class="fa-solid fa-list-ul"></i> รายชื่อทั้งหมด</a>
+      <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> ค้นหาบนแผนที่</a>
+      <a href="register.html" class="btn-cta"><i class="fa-solid fa-user-plus"></i> สมัครสมาชิก</a>
+      <a href="admin.html" class="active"><i class="fa-solid fa-user-gear"></i> แอดมิน</a>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- 1. Admin Login Panel (Visible by default if not logged in) -->
+    <section id="admin-login-sec" class="admin-login-card form-card">
+      <i class="fa-solid fa-lock" style="font-size: 3rem; color: var(--primary-glow); margin-bottom: 1.5rem;"></i>
+      <h2 style="margin-bottom: 1rem;">เข้าสู่ระบบผู้ดูแลระบบ</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">ป้อนรหัสผ่านเพื่อสิทธิ์การจัดการระบบและดูสถิติอันดับลับ</p>
+      
+      <form id="admin-login-form">
+        <div class="form-group" style="text-align: left;">
+          <label for="admin-password">รหัสผ่านแอดมิน</label>
+          <input type="password" id="admin-password" required placeholder="ใส่รหัสผ่าน...">
+        </div>
+        <button type="submit" class="btn-cta" style="width: 100%; padding: 0.8rem; font-size: 1rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> ยืนยันรหัสผ่าน
+        </button>
+      </form>
+    </section>
+
+    <!-- 2. Admin Dashboard (Hidden by default, shown after login) -->
+    <section id="admin-dashboard-sec" style="display: none;">
+      
+      <div class="admin-header-row">
+        <div>
+          <h2 style="font-size: 2.2rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">แผงผู้ดูแลระบบ & จัดอันดับความนิยมลับ</h2>
+          <p style="color: var(--text-secondary);">จัดการการสมัครสมาชิก ยืนยันข้อมูล และดูสถิติยอดผู้ใช้บริการสูงสุด</p>
+        </div>
+        <button class="btn-cta" id="btn-admin-logout" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); box-shadow: none;">
+          <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+        </button>
+      </div>
+
+      <!-- Analytics Cards -->
+      <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 2.5rem; gap: 1.5rem;">
+        <div class="user-card" style="padding: 1.5rem; display: flex; flex-direction: row; align-items: center; justify-content: space-between; min-height: auto;">
+          <div>
+            <span style="color: var(--text-secondary); font-size: 0.9rem;">สมาชิกทั้งหมด</span>
+            <h2 id="stat-total-users" style="font-size: 2.5rem; font-weight: 700; color: #fff;">0</h2>
+          </div>
+          <i class="fa-solid fa-users" style="font-size: 2.5rem; color: var(--secondary-glow);"></i>
+        </div>
+        
+        <div class="user-card" style="padding: 1.5rem; display: flex; flex-direction: row; align-items: center; justify-content: space-between; min-height: auto;">
+          <div>
+            <span style="color: var(--text-secondary); font-size: 0.9rem;">กำลังรออนุมัติ</span>
+            <h2 id="stat-pending-users" style="font-size: 2.5rem; font-weight: 700; color: var(--warning);">0</h2>
+          </div>
+          <i class="fa-solid fa-user-clock" style="font-size: 2.5rem; color: var(--warning);"></i>
+        </div>
+
+        <div class="user-card" style="padding: 1.5rem; display: flex; flex-direction: row; align-items: center; justify-content: space-between; min-height: auto;">
+          <div>
+            <span style="color: var(--text-secondary); font-size: 0.9rem;">ยอดกดจอง/ติดต่อรวม</span>
+            <h2 id="stat-total-bookings" style="font-size: 2.5rem; font-weight: 700; color: var(--success);">0</h2>
+          </div>
+          <i class="fa-solid fa-calendar-check" style="font-size: 2.5rem; color: var(--success);"></i>
+        </div>
+      </div>
+
+      <!-- Slip Approval Section -->
+      <h3 style="font-size: 1.5rem; margin-bottom: 1rem;"><i class="fa-solid fa-receipt"></i> ตรวจสอบสลิปการโอนเงิน (แจ้งเปิด VIP)</h3>
+      <div class="table-responsive" style="margin-bottom: 3rem;">
+        <table id="payments-table">
+          <thead>
+            <tr>
+              <th>ลูกค้าผู้โอน</th>
+              <th style="width: 150px;">รูปหลักฐานสลิป</th>
+              <th>จำนวนเงิน</th>
+              <th>เวลาแจ้งโอน</th>
+              <th>สถานะปัจจุบัน</th>
+              <th style="text-align: center;">เครื่องมือจัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="payments-table-body">
+            <!-- Dynamic payment rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Secret Ranking Section (จัดอันดับลับคนที่มีคนสนใจคลิกจองมากที่สุด) -->
+      <h3 style="font-size: 1.5rem; margin-bottom: 1rem;"><i class="fa-solid fa-ranking-star" style="color: #ffea00;"></i> จัดอันดับลับ (เรียงตามคนมีผู้ใช้บริการ/คนติดต่อมากที่สุด)</h3>
+      <div class="table-responsive" style="margin-bottom: 3rem;">
+        <table id="ranking-table">
+          <thead>
+            <tr>
+              <th style="width: 80px; text-align: center;">อันดับ</th>
+              <th>โปรไฟล์</th>
+              <th>ชื่อ</th>
+              <th>เรทราคา</th>
+              <th style="text-align: center;">ยอดคลิกติดต่อ/จอง</th>
+              <th>สถานะปัจจุบัน</th>
+              <th>สถานะตรวจสอบ</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-table-body">
+            <!-- Dynamically loaded rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Main Users Management Section -->
+      <h3 style="font-size: 1.5rem; margin-bottom: 1rem;"><i class="fa-solid fa-users-gear"></i> สมาชิกทั้งหมดและการอนุมัติสมัคร</h3>
+      <div class="table-responsive">
+        <table id="users-table">
+          <thead>
+            <tr>
+              <th>รูป</th>
+              <th>ชื่อ</th>
+              <th>เรทราคา</th>
+              <th>พิกัดจริง (Lat, Lng)</th>
+              <th>ช่องทางติดต่อ</th>
+              <th>สถานะ</th>
+              <th>อนุมัติเข้าระบบ</th>
+              <th style="text-align: center;">เครื่องมือ</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <!-- Dynamically loaded rows -->
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Admin Edit User Modal -->
+  <div class="modal-backdrop" id="admin-edit-modal">
+    <div class="modal-content" style="max-width: 550px;">
+      <div class="modal-header">
+        <h3>แก้ไขข้อมูลสมาชิก</h3>
+        <button class="modal-close" onclick="closeAdminEditModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align: left;">
+        <form id="admin-edit-form" enctype="multipart/form-data">
+          <input type="hidden" id="edit-user-id" name="id">
+
+          <!-- Current Image Display -->
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <img id="edit-current-avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-glow); box-shadow: 0 0 10px rgba(255, 42, 116, 0.2);" src="" alt="Current Profile Picture">
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.3rem;">รูปภาพปัจจุบัน</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-name">ชื่อเล่น / นามแฝง</label>
+            <input type="text" id="edit-name" name="name" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-price">เรทราคา (บาท)</label>
+              <input type="number" id="edit-price" name="price" required min="0">
+            </div>
+            <div class="form-group">
+              <label for="edit-status">สถานะ</label>
+              <select id="edit-status" name="status">
+                <option value="available">ว่าง</option>
+                <option value="busy">ไม่ว่าง</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-bio">แนะนำตัวเอง / รายละเอียดงาน</label>
+            <textarea id="edit-bio" name="bio" rows="3"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-line">Line ID</label>
+              <input type="text" id="edit-line" name="lineId" required>
+            </div>
+            <div class="form-group">
+              <label for="edit-phone">เบอร์โทรศัพท์</label>
+              <input type="tel" id="edit-phone" name="phone">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-lat">ละติจูด (Lat)</label>
+              <input type="number" id="edit-lat" name="lat" step="any" required>
+            </div>
+            <div class="form-group">
+              <label for="edit-lng">ลองจิจูด (Lng)</label>
+              <input type="number" id="edit-lng" name="lng" step="any" required>
+            </div>
+          </div>
+
+          <!-- New Image Upload Selector -->
+          <div class="form-group">
+            <label><i class="fa-solid fa-image"></i> อัปโหลดรูปโปรไฟล์ใหม่ (ปล่อยว่างไว้ถ้าใช้รูปเดิม)</label>
+            <div class="file-upload-wrapper">
+              <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.8rem; color: var(--text-secondary); margin-bottom: 0.5rem;"></i>
+              <p style="color: var(--text-secondary); font-size: 0.85rem;">คลิกเพื่อเลือกไฟล์รูปภาพ หรือลากมาวางที่นี่</p>
+              <input type="file" id="edit-photo" name="photo" accept="image/*">
+              <img id="edit-photo-preview" class="file-upload-preview" alt="New Profile Photo Preview">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-cta" style="width: 100%; padding: 0.8rem; font-size: 1rem; margin-top: 1rem;">
+            <i class="fa-solid fa-floppy-disk"></i> บันทึกการแก้ไข
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initAdminDashboard();
+      
+      // Submit Admin Login
+      document.getElementById('admin-login-form').addEventListener('submit', handleAdminLogin);
+      
+      // Admin Logout
+      document.getElementById('btn-admin-logout').addEventListener('click', handleAdminLogout);
+      
+      // Submit Admin Edit
+      document.getElementById('admin-edit-form').addEventListener('submit', handleAdminEditSubmit);
+
+      // Edit photo preview logic
+      const editPhotoInput = document.getElementById('edit-photo');
+      const editPhotoPreview = document.getElementById('edit-photo-preview');
+      
+      editPhotoInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            editPhotoPreview.src = e.target.result;
+            editPhotoPreview.style.display = 'block';
+          }
+          reader.readAsDataURL(file);
+        } else {
+          editPhotoPreview.src = '';
+          editPhotoPreview.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

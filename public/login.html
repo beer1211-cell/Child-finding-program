@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SweetMap - เข้าสู่ระบบสมาชิก</title>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-glass);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .auth-tab.active {
+      color: #fff;
+      border-bottom: 2px solid var(--primary-glow);
+      text-shadow: 0 0 10px rgba(255, 42, 116, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header>
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-heart-pulse"></i> SweetMap
+    </a>
+    <nav id="navbar-links">
+      <a href="index.html"><i class="fa-solid fa-list-ul"></i> รายชื่อทั้งหมด</a>
+      <a href="map.html"><i class="fa-solid fa-map-location-dot"></i> ค้นหาบนแผนที่</a>
+      <a href="register.html" class="btn-cta"><i class="fa-solid fa-user-plus"></i> สมัครสมาชิก</a>
+      <a href="admin.html"><i class="fa-solid fa-user-gear"></i> แอดมิน</a>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    
+    <div class="form-card" style="max-width: 450px;">
+      
+      <!-- Tab Headers -->
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login" onclick="toggleAuthTab('login')">เข้าสู่ระบบ</div>
+        <div class="auth-tab" id="tab-register" onclick="toggleAuthTab('register')">สมัครสมาชิกใหม่</div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="customer-login-form">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.6rem;">เข้าสู่ระบบสมาชิก</h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">เข้าใช้งานระบบดูพิกัดแผนที่และข้อมูลติดต่อสมาชิก</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="login-username"><i class="fa-solid fa-user"></i> ชื่อผู้ใช้งาน (Username)</label>
+          <input type="text" id="login-username" required placeholder="ใส่ชื่อผู้ใช้งาน...">
+        </div>
+        
+        <div class="form-group">
+          <label for="login-password"><i class="fa-solid fa-lock"></i> รหัสผ่าน (Password)</label>
+          <input type="password" id="login-password" required placeholder="ใส่รหัสผ่าน...">
+        </div>
+        
+        <button type="submit" class="btn-cta" style="width: 100%; padding: 0.8rem; font-size: 1rem; margin-top: 1rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ
+        </button>
+      </form>
+
+      <!-- Register Form (Hidden by default) -->
+      <form id="customer-register-form" style="display: none;">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.6rem;">ลงทะเบียนสมาชิกใหม่</h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">สร้างบัญชีเพื่อเข้าดูข้อมูลแนะนำและสมัครสมาชิก VIP</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="reg-username"><i class="fa-solid fa-user"></i> ชื่อผู้ใช้งาน (Username)</label>
+          <input type="text" id="reg-username" required placeholder="ตั้งชื่อผู้ใช้งาน...">
+        </div>
+        
+        <div class="form-group">
+          <label for="reg-password"><i class="fa-solid fa-lock"></i> รหัสผ่าน (Password)</label>
+          <input type="password" id="reg-password" required placeholder="ตั้งรหัสผ่าน...">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-password-confirm"><i class="fa-solid fa-circle-check"></i> ยืนยันรหัสผ่าน</label>
+          <input type="password" id="reg-password-confirm" required placeholder="ป้อนรหัสผ่านอีกครั้ง...">
+        </div>
+        
+        <button type="submit" class="btn-cta" style="width: 100%; padding: 0.8rem; font-size: 1rem; margin-top: 1rem;">
+          <i class="fa-solid fa-user-plus"></i> สมัครสมาชิกใหม่
+        </button>
+      </form>
+
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    function toggleAuthTab(type) {
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      const formLogin = document.getElementById('customer-login-form');
+      const formRegister = document.getElementById('customer-register-form');
+      
+      if (type === 'login') {
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+        formLogin.style.display = 'block';
+        formRegister.style.display = 'none';
+      } else {
+        tabLogin.classList.remove('active');
+        tabRegister.classList.add('active');
+        formLogin.style.display = 'none';
+        formRegister.style.display = 'block';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check auth state
+      checkCustomerAuth();
+      
+      // Bind submit handlers
+      document.getElementById('customer-login-form').addEventListener('submit', handleCustomerLogin);
+      document.getElementById('customer-register-form').addEventListener('submit', handleCustomerRegister);
+    });
+  </script>
+</body>
+</html>
