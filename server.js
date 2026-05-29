@@ -165,7 +165,7 @@ app.post('/api/customer/upload-slip', upload.single('slip'), async (req, res) =>
       return res.status(400).json({ error: 'กรุณาแนบรูปภาพสลิปโอนเงิน' });
     }
 
-    const slipPath = `/uploads/${req.file.filename}`;
+    const slipPath = await db.uploadFile(req.file);
     await db.addPayment(customerId, slipPath, VIP_FEE);
 
     res.json({ 
@@ -244,10 +244,7 @@ app.post('/api/users/register', upload.single('photo'), async (req, res) => {
       return res.status(400).json({ error: 'กรุณากรอกชื่อ เรทราคา และปักหมุดตำแหน่งพิกัด' });
     }
     
-    let photoPath = '/uploads/default-avatar.png';
-    if (req.file) {
-      photoPath = `/uploads/${req.file.filename}`;
-    }
+    const photoPath = req.file ? await db.uploadFile(req.file) : '/uploads/default-avatar.png';
     
     const newUser = await db.addUser({
       name,
@@ -385,7 +382,7 @@ app.post('/api/admin/users/edit', verifyAdmin, upload.single('photo'), async (re
 
   // If a new photo is uploaded, update its file path
   if (req.file) {
-    updateFields.photo = `/uploads/${req.file.filename}`;
+    updateFields.photo = await db.uploadFile(req.file);
   }
   
   const updatedUser = await db.updateUser(id, updateFields);

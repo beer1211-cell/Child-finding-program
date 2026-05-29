@@ -18,6 +18,7 @@ const HEADERS = {
 
 let useGoogleSheets = false;
 let sheetsClient = null;
+let driveClient = null;
 let SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 
 // Ensure local fallback files exist
@@ -72,10 +73,14 @@ async function initGoogleSheets() {
   try {
     const auth = new google.auth.GoogleAuth({
       keyFile: credentialsPath,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets']
+      scopes: [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive'
+      ]
     });
     
     sheetsClient = google.sheets({ version: 'v4', auth });
+    driveClient = google.drive({ version: 'v3', auth });
     
     // Test connection and auto-initialize headers
     for (const sheetName of Object.keys(HEADERS)) {
@@ -216,6 +221,64 @@ module.exports = {
   reinitSheets: async () => {
     await initGoogleSheets();
     return useGoogleSheets;
+  },
+
+  // Google Drive File Uploader
+  uploadFile: async (fileObject) => {
+    if (!fileObject) return null;
+
+    const localPath = fileObject.path;
+    const filename = fileObject.filename;
+    const mimeType = fileObject.mimetype;
+    const fallbackUrl = `/uploads/${filename}`;
+
+    const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+
+    if (!useGoogleSheets || !driveClient || !folderId || folderId === 'your_folder_id_here') {
+      return fallbackUrl;
+    }
+
+    try {
+      // 1. Upload file to Google Drive
+      const fileMetadata = {
+        name: filename,
+        parents: [folderId]
+      };
+      const media = {
+        mimeType: mimeType,
+        body: fs.createReadStream(localPath)
+      };
+
+      const response = await driveClient.files.create({
+        requestBody: fileMetadata,
+        media: media,
+        fields: 'id'
+      });
+
+      const fileId = response.data.id;
+
+      // 2. Make the file public (anyone can read)
+      await driveClient.permissions.create({
+        fileId: fileId,
+        requestBody: {
+          role: 'reader',
+          type: 'anyone'
+        }
+      });
+
+      // 3. Remove the local temp file to save space
+      try {
+        fs.unlinkSync(localPath);
+      } catch (err) {
+        console.error("❌ [Google Drive]: Failed to delete local temp file:", err.message);
+      }
+
+      // 4. Return direct public web link for standard HTML <img> tags
+      return `https://lh3.googleusercontent.com/d/${fileId}`;
+    } catch (error) {
+      console.error("❌ [Google Drive]: Upload failed, falling back to local file path:", error.message);
+      return fallbackUrl;
+    }
   },
 
   // Users CRUD
