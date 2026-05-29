@@ -82,8 +82,18 @@
             <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 0.5rem;"></i>
             <p style="color: var(--text-secondary); font-size: 0.9rem;">คลิกเพื่อเลือกไฟล์รูปภาพ หรือลากมาวางที่นี่</p>
             <input type="file" id="reg-photo" name="photo" accept="image/*" required>
-            <img id="upload-preview" class="file-upload-preview" alt="Preview Image">
+            <img id="upload-preview" class="file-upload-preview" style="width: 150px; height: 150px; object-fit: cover; margin: 1rem auto 0 auto; border-radius: 8px; display: none;" alt="Preview Image">
           </div>
+        </div>
+
+        <!-- Image Position / Alignment -->
+        <div class="form-group">
+          <label for="reg-object-position"><i class="fa-solid fa-arrows-to-eye"></i> ปรับการจัดวางภาพโปรไฟล์</label>
+          <select id="reg-object-position" name="objectPosition">
+            <option value="center">กึ่งกลาง (Center)</option>
+            <option value="center top">เน้นส่วนบน (Top - เหมาะสำหรับภาพเห็นหัวชัดเจน)</option>
+            <option value="center bottom">เน้นส่วนล่าง (Bottom)</option>
+          </select>
         </div>
 
         <!-- Map Location Picker -->
@@ -126,6 +136,7 @@
       // Photo upload preview logic
       const fileInput = document.getElementById('reg-photo');
       const previewImg = document.getElementById('upload-preview');
+      const positionSelect = document.getElementById('reg-object-position');
       
       fileInput.addEventListener('change', function() {
         const file = this.files[0];
@@ -134,12 +145,17 @@
           reader.onload = function(e) {
             previewImg.src = e.target.result;
             previewImg.style.display = 'block';
+            previewImg.style.objectPosition = positionSelect.value;
           }
           reader.readAsDataURL(file);
         } else {
           previewImg.src = '';
           previewImg.style.display = 'none';
         }
+      });
+
+      positionSelect.addEventListener('change', function() {
+        previewImg.style.objectPosition = this.value;
       });
 
       // Submit Form

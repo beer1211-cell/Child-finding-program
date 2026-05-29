@@ -238,7 +238,7 @@ app.get('/api/users', async (req, res) => {
 // Register new Dating Provider profile
 app.post('/api/users/register', upload.single('photo'), async (req, res) => {
   try {
-    const { name, price, lat, lng, lineId, phone, bio } = req.body;
+    const { name, price, lat, lng, lineId, phone, bio, objectPosition } = req.body;
     
     if (!name || !price || !lat || !lng) {
       return res.status(400).json({ error: 'กรุณากรอกชื่อ เรทราคา และปักหมุดตำแหน่งพิกัด' });
@@ -258,7 +258,8 @@ app.post('/api/users/register', upload.single('photo'), async (req, res) => {
       phone,
       bio,
       photo: photoPath,
-      status: 'available'
+      status: 'available',
+      objectPosition: objectPosition || 'center'
     });
     
     res.status(201).json({ 
@@ -367,7 +368,7 @@ app.post('/api/admin/delete', verifyAdmin, async (req, res) => {
 
 // Edit user profile details
 app.post('/api/admin/users/edit', verifyAdmin, upload.single('photo'), async (req, res) => {
-  const { id, name, price, lineId, phone, bio, lat, lng, status } = req.body;
+  const { id, name, price, lineId, phone, bio, lat, lng, status, objectPosition } = req.body;
   if (!id) return res.status(400).json({ error: 'ID is required' });
   
   const updateFields = {
@@ -378,7 +379,8 @@ app.post('/api/admin/users/edit', verifyAdmin, upload.single('photo'), async (re
     bio,
     lat,
     lng,
-    status
+    status,
+    objectPosition
   };
 
   // If a new photo is uploaded, update its file path

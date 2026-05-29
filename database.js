@@ -10,7 +10,7 @@ const PAYMENTS_FILE = path.join(DATA_DIR, 'payments.json');
 
 // Sheets configuration headers mapping
 const HEADERS = {
-  Users: ['id', 'name', 'price', 'lat', 'lng', 'status', 'photo', 'lineId', 'phone', 'bio', 'isVerified', 'bookingsCount', 'createdAt'],
+  Users: ['id', 'name', 'price', 'lat', 'lng', 'status', 'photo', 'lineId', 'phone', 'bio', 'isVerified', 'bookingsCount', 'createdAt', 'objectPosition'],
   Bookings: ['id', 'userId', 'timestamp', 'clientIp'],
   Customers: ['id', 'username', 'password', 'isVip', 'createdAt'],
   Payments: ['id', 'customerId', 'slipPhoto', 'amount', 'status', 'createdAt']
@@ -238,7 +238,8 @@ module.exports = {
       bio: userData.bio || '',
       isVerified: false,
       bookingsCount: 0,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      objectPosition: userData.objectPosition || 'center'
     };
     
     if (useGoogleSheets) {
@@ -295,7 +296,8 @@ module.exports = {
         lat: updateData.lat !== undefined && !isNaN(parseFloat(updateData.lat)) ? parseFloat(updateData.lat) : users[index].lat,
         lng: updateData.lng !== undefined && !isNaN(parseFloat(updateData.lng)) ? parseFloat(updateData.lng) : users[index].lng,
         status: updateData.status || users[index].status,
-        photo: updateData.photo !== undefined ? updateData.photo : users[index].photo
+        photo: updateData.photo !== undefined ? updateData.photo : users[index].photo,
+        objectPosition: updateData.objectPosition !== undefined ? updateData.objectPosition : users[index].objectPosition
       };
       
       if (useGoogleSheets) {

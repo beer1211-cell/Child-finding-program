@@ -142,6 +142,28 @@ async function handleCustomerRegister(e) {
   }
 }
 
+// Dating Provider profile registration form submit handler
+async function handleRegisterSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+
+  try {
+    const res = await fetch(`${API_URL}/api/users/register`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to submit application');
+
+    alert(data.message);
+    window.location.href = 'index.html';
+  } catch (error) {
+    alert('เกิดข้อผิดพลาด: ' + error.message);
+  }
+}
+
 // Customer Login submission handler
 async function handleCustomerLogin(e) {
   e.preventDefault();
@@ -220,7 +242,8 @@ function renderProfiles(users) {
     
     // Blurring style
     const isVipCard = user.isVip;
-    const cardImgStyle = isVipCard ? '' : 'filter: blur(8px) brightness(0.6); pointer-events: none;';
+    const objectPos = user.objectPosition || 'center';
+    const cardImgStyle = (isVipCard ? '' : 'filter: blur(8px) brightness(0.6); pointer-events: none; ') + `object-position: ${objectPos};`;
     const priceText = isVipCard ? `${parseFloat(user.price).toLocaleString()} ฿` : 'เฉพาะ VIP';
     
     const actionBtn = isVipCard 
@@ -552,7 +575,7 @@ function renderMapMarkers() {
     
     const popupContent = `
       <div class="map-popup-card">
-        <img class="map-popup-img" src="${user.photo}" onerror="this.src='/uploads/default-avatar.png'">
+        <img class="map-popup-img" src="${user.photo}" style="object-position: ${user.objectPosition || 'center'};" onerror="this.src='/uploads/default-avatar.png'">
         <div class="map-popup-info">
           <h4>${escapeHTML(user.name)}</h4>
           <span>${parseFloat(user.price).toLocaleString()} ฿</span>
@@ -906,11 +929,21 @@ function adminOpenEditModal(userId) {
 
   // Set current avatar preview
   document.getElementById('edit-current-avatar').src = user.photo || '/uploads/default-avatar.png';
+  document.getElementById('edit-current-avatar').style.objectPosition = user.objectPosition || 'center';
+  document.getElementById('edit-object-position').value = user.objectPosition || 'center';
   
   // Reset new photo file input and its preview
   document.getElementById('edit-photo').value = '';
   document.getElementById('edit-photo-preview').style.display = 'none';
   document.getElementById('edit-photo-preview').src = '';
+  document.getElementById('edit-photo-preview').style.objectPosition = user.objectPosition || 'center';
+
+  // Add listener for live preview in edit modal
+  const editPositionSelect = document.getElementById('edit-object-position');
+  editPositionSelect.onchange = function() {
+    document.getElementById('edit-current-avatar').style.objectPosition = this.value;
+    document.getElementById('edit-photo-preview').style.objectPosition = this.value;
+  };
 
   const modal = document.getElementById('admin-edit-modal');
   if (modal) modal.classList.add('open');
